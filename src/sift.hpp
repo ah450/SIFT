@@ -12,22 +12,20 @@ using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
 
-void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints);
-
-void buildGaussianPyramid(Mat& image, vector<vector<Mat>>& pyr,
-                            int nOctaves);
-
-void cleanPoints(Mat& image, int curv_thr ); //based on contrast
-                                            //and principal curvature ratio
-
 Mat downSample(Mat& image);
+
+void buildGaussianPyramid(Mat& image, vector<vector<Mat>>& pyr, int nOctaves);
 
 vector<vector<Mat>> buildDogPyr(vector<vector<Mat>> gauss_pyr);
 
-vector<double> computeOrientationHist(const Mat& image);
-// Calculates the gradient vector of the feature
-
 void getScaleSpaceExtrema(vector<vector<Mat>>& dog_pyr,
-                            vector<KeyPoint>& keypoints);
-    
+                          vector<KeyPoint>& keypoints);
+
+// clean points based on contrast and principal curvature ratio
+void cleanPoints(Mat& image, int curv_thr);
+
+// calculate the gradient vector of the features
+vector<double> computeOrientationHist(const Mat& image);
+
+void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints);
 }
