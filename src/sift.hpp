@@ -1,13 +1,16 @@
 #pragma once
-#include <opencv2/core/mat.hpp>
+#include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
+
+#include "constants.hpp"
+
 #include <vector>
 
 
 namespace sift {
 using std::vector;
 using cv::Mat;
-using cv::Keypoint;
+using cv::KeyPoint;
 
 void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints);
 
