@@ -1,5 +1,8 @@
 
 list(APPEND SRCS utils.cpp)
+list(APPEND TEST_SRCS test/test.cpp)
+list(APPEND TEST_SRCS test/utils_tests.cpp)
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 
@@ -13,5 +16,5 @@ include_directories(".")
 add_executable(${EXECUTABLE_NAME} ${SRCS} main.cpp)
 target_link_libraries(${EXECUTABLE_NAME} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
 
-add_executable(${TEST_EXEC_NAME} ${SRCS} test/test.cpp test/utils_tests.cpp )
+add_executable(${TEST_EXEC_NAME} ${SRCS}  ${TEST_SRCS} )
 target_link_libraries(${TEST_EXEC_NAME} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
