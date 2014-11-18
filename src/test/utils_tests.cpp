@@ -1,7 +1,6 @@
 #include "test.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 
 
@@ -10,7 +9,7 @@ TEST_CASE("Down sampling", "[utilities]") {
     cv::Mat downsampled;
     SECTION("NO THROW") {
         
-        REQUIRE_NOTHROW(downsampled = sift::downSample(m));
+        REQUIRE_NOTHROW( downsampled = sift::downSample(m) );
     }
 
     SECTION("Matrix size") {
