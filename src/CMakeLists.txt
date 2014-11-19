@@ -12,6 +12,14 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 find_package(OpenCV REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 
+if ( NOT OpenCV_FOUND )
+    message(FATAL_ERROR "Package OpenCV required but not found!")
+endif()
+
+if ( NOT Boost_FOUND )
+    message(FATAL_ERROR "Package Boost required but not found!")
+endif()
+
 include_directories(${OPENCV_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(".")
