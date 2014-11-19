@@ -1,6 +1,9 @@
 #include "sift.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
+#include <iterator>
+#include <algorithm>
+
 
 namespace sift {
 
@@ -24,4 +27,28 @@ void buildGaussianPyramid(Mat& image, vector<vector<Mat>>& pyr, int nOctaves) {
     }
 }
 
+/**
+ * @brief Builds a difference of gaussian for each octave
+ * 
+ * @param gauss_pyr 2D vector representing pyramids of all octaves.
+ * @remark order of dogs is identical to gauss_pyr
+ * @return 2D vector of DoGs
+ */
+vector<vector<Mat>> buildDogPyr(vector<vector<Mat>> gauss_pyr) {
+    vector<vector<Mat>> dogs(gauss_pyr.size());
+    auto dog_iterator  = std::begin(dogs);
+    for (const auto &octave : gauss_pyr) {
+        auto start = std::begin(octave);
+        auto end = --std::end(octave);
+        std::transform(start, end, start + 1, 
+            std::back_inserter(*dog_iterator), [](const Mat & lower, const Mat &upper) {
+                return upper - lower;  
+            } );
+        dog_iterator++;
+    }
+    return dogs;
 }
+
+}
+
+

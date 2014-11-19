@@ -4,6 +4,7 @@ list(APPEND SRCS scale_space.cpp)
 list(APPEND TEST_SRCS test/test.cpp)
 list(APPEND TEST_SRCS test/utils_tests.cpp)
 list(APPEND TEST_SRCS test/buildGaussianPyramid_test.cpp)
+list(APPEND TEST_SRCS test/dog_tests.cpp)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 

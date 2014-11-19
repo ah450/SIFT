@@ -7,7 +7,7 @@
 TEST_CASE("Down sampling", "[utilities]") {
     cv::Mat m(8, 8, sift::IMAGE_DATA_TYPE, img8x8_data);
     cv::Mat downsampled;
-    SECTION("NO THROW") {
+    SECTION("Exception safety") {
         
         REQUIRE_NOTHROW( downsampled = sift::downSample(m) );
     }
