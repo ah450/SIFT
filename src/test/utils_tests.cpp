@@ -21,7 +21,7 @@ TEST_CASE("Down sampling", "[utilities]") {
     SECTION("Actual Data check") {
         downsampled = sift::downSample(m);
         auto downsampled_fixture = cv::Mat(4, 4, 
-            sift::IMAGE_DATA_TYPE, image4x4_data);
+            sift::IMAGE_DATA_TYPE, img4x4_data);
         REQUIRE( std::equal(downsampled_fixture.begin<sift::image_t>(),
             downsampled_fixture.end<sift::image_t>(), 
             downsampled.begin<sift::image_t>()) );
