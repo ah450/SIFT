@@ -5,9 +5,9 @@ before_install:
 install:
   - sudo apt-get install -qq gcc-4.8 g++-4.8 libboost-all-dev
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-
+  - ./ubuntu_cv.sh
+  
 before_script:
-    - ./ubuntu_opencv.sh
     - rm -r build
 script: mkdir build && cd build && cmake .. && make && ./sift-tests
 
