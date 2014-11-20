@@ -1,6 +1,7 @@
 
 list(APPEND SRCS utils.cpp)
 list(APPEND SRCS scale_space.cpp)
+list(APPEND SRCS internal.cpp)
 list(APPEND TEST_SRCS test/test.cpp)
 list(APPEND TEST_SRCS test/utils_tests.cpp)
 list(APPEND TEST_SRCS test/buildGaussianPyramid_test.cpp)

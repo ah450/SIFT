@@ -28,3 +28,26 @@ TEST_CASE("Down sampling", "[utilities]") {
         
     }
 }
+
+
+TEST_CASE("find_local_extremas", "[extrema]") {
+
+    std::vector<sift::internal::point> points;
+    cv::Mat lower(9, 9, sift::IMAGE_DATA_TYPE, lower_9x9_extrema), 
+        current(9, 9, sift::IMAGE_DATA_TYPE, current_9x9_extrema),
+        upper(9, 9, sift::IMAGE_DATA_TYPE, upper_9x9_extrema);
+
+    REQUIRE_NOTHROW( points = sift::internal::find_local_extremas(lower, current,
+        upper) );
+
+    SECTION("Size"){
+        REQUIRE(points.size() == extremas.size());
+    }
+
+    SECTION("Verify extremas") {
+        for(auto& p : extremas) {
+            REQUIRE(std::find(points.begin(), points.end(), p) != points.end());
+        }
+    }
+
+}
