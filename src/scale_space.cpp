@@ -53,8 +53,6 @@ vector<vector<Mat>> buildDogPyr(vector<vector<Mat>> gauss_pyr) {
     return dogs;
 }
 
-
-
 /**
  * @brief Detects keypoints from DoG
  * @details Finds extremas in a 3x3x3 window
@@ -79,9 +77,12 @@ vector<KeyPoint> &keypoints) {
              ***********************************************************************************************/
             for (const auto &p : points) {
                 // FIXME: need to compute response value
-                // found abs(interpolated_DoG_value), what does that mean?
+                // found abs(interpolated_DoG_val   ue), what does that mean?
                 // FIXME: Use subpixel values 
-                keypoints.emplace_back(p.first, p.second, octave_sigma, -1, 0, octave);
+                // Compute subpixel values
+                // using taylor expansion
+                keypoints.emplace_back(p.first, p.second, octave_sigma, -1,
+                    octave_dog[image].at<image_t>(p.first, p.second), octave);
             }
         }
     }
