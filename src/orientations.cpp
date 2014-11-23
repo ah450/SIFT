@@ -17,7 +17,7 @@ class LazyMat{
     
 public:
     const int rows, cols;
-    LazyMat(Func_t f, int rows, int cols): f(f), rows(rows), cols(cols){}
+    LazyMat(Func_t f, int rows, int cols): f(f), is_computed(rows*cols), values(rows*cols), rows(rows), cols(cols){}
     template <typename ReturnValue> 
     ReturnValue at(int x, int y) {
         int index  = x * cols + y;
@@ -52,8 +52,7 @@ struct Neighbourhood {
     int kernel_size, row_start, row_end, col_start, col_end;
     Neighbourhood(int num_rows, int num_columns, int row, int col,
         double scale, double min=5.0) {
-
-        int kernel_size = std::max(3 * scale, min);
+        kernel_size = std::max(3 * scale, min);
         if (kernel_size % 2  == 0) {
             kernel_size += 1;
         }
@@ -80,7 +79,7 @@ eval_func_t create_smoothing_func(MagnitudesMat &grad_magnitudes, KeyPoint &kp, 
     Mat gauss = gauss_x * gauss_y.t();
     auto scale = kp.size;
     // Function to apply gaussian depends on gra
-    auto apply_gauss = [&grad_magnitudes, &gauss, scale](int row, int column) {
+    auto apply_gauss = [&grad_magnitudes, gauss, scale](int row, int column) {
         Neighbourhood area(grad_magnitudes.rows, grad_magnitudes.cols, row, column, scale);
         double value = 0.0;
         for (int i = area.row_start; i < area.row_end; i++) {
@@ -100,6 +99,7 @@ eval_func_t create_smoothing_func(MagnitudesMat &grad_magnitudes, KeyPoint &kp, 
  */
 template <class DxMat, class DyMat>
 eval_func_t create_magnitude_func(DxMat & dx_mat, DyMat &dy_mat) {
+    using namespace std::placeholders;
     auto get_mag = [&dx_mat, &dy_mat](int row, int column) {
         double dx = dx_mat.template at<double>(row, column);
         double dy = dy_mat.template at<double>(row, column);
@@ -147,53 +147,32 @@ eval_func_t create_angle_func(DxMat & dx_mat, DyMat &dy_mat) {
 
 
 
-vector<vector<double>> computeOrientationHist(const vector<vector<Mat>> &dogs_pyr, vector<KeyPoint> &kps) {
+vector<vector<double>> computeOrientationHist(const vector<Mat> &images, vector<KeyPoint> &kps) {
     vector<vector<double>> histograms;
     histograms.reserve(kps.size());
     using namespace std::placeholders;
-    
-    vector<vector<LazyMat<eval_func_t>>> dx_pyr(dogs_pyr.size()), 
-        dy_pyr(dogs_pyr.size()), mags_pyr(dogs_pyr.size()), angles_pyr(dogs_pyr.size());
+    vector<LazyMat<eval_func_t>> dx, dy, grads, angles;
 
-    // Compute gradient mags and angles for all DoGs
-    // Lazily
-    for (auto &dogs : dogs_pyr) {
-        dx_pyr.emplace_back();
-        dy_pyr.emplace_back();
-        mags_pyr.emplace_back();
-        angles_pyr.emplace_back();
-        auto & dx = dx_pyr.back();
-        auto & dy = dy_pyr.back();
-        auto & mags = mags_pyr.back();
-        auto & angles = angles_pyr.back();
-        for (auto &dog : dogs) {
-            // Lazily evaluate Dx and Dy of DoG image
-            std::function<double(int, int)> bound_x = [&dog] (int x, int y) {
-                return delta_x(dog, x, y);
-            };
-            std::function<double(int, int)> bound_y = [&dog] (int x, int y) {
-                return delta_y(dog, x, y);
-            };
-            dx.emplace_back(bound_x, 
-                dog.rows, dog.cols);
-            dy.emplace_back(bound_y, 
-                dog.rows, dog.cols);
-            // Magnitude function
-            auto mag_func = create_magnitude_func(dx.back(), dy.back());
-            // Angle function
-            auto angle_func = create_angle_func(dx.back(), dy.back());
-            // Lazily evaluate over DoG image
-            mags.emplace_back(mag_func, dog.rows, dog.cols);
-            angles.emplace_back(angle_func, dog.rows, dog.cols);
-        }
+
+    for (auto & image : images) {
+        auto xf = std::bind(delta_x, std::ref(image), _1, _2);
+        auto yf = std::bind(delta_y, std::ref(image), _1, _2);
+        dx.emplace_back(xf, image.rows, image.cols);
+        dy.emplace_back(yf, image.rows, image.cols);
+    }
+
+    for (std::size_t i = 0; i < dx.size(); i++) {
+        grads.emplace_back(create_magnitude_func(dx[i], dy[i]), dx[i].rows, dx[i].cols);
+        angles.emplace_back(create_angle_func(dx[i], dy[i]), dx[i].rows, dx[i].cols);
     }
     
+
     
     
     // Calculate histograms of each keypoint
     for (auto &kp : kps) {
-        auto & grad_magnitudes = mags_pyr[kp.octave][kp.angle];
-        auto & angles_mat = angles_pyr[kp.octave][kp.angle];
+        LazyMat<eval_func_t> & grad_magnitudes = grads[kp.octave];
+        LazyMat<eval_func_t> & angles_mat = angles[kp.octave];
         std::vector<double> kp_histogram(36, 0.0); // Histogram for current keypoint to be populated
         // Number of samples taken into account depend on scale of keypoint
         // NeighbourhoodArea is a helper class for finding the row and column boundries
