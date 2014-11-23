@@ -25,7 +25,7 @@ void getScaleSpaceExtrema(vector<vector<Mat>>& dog_pyr,
 void cleanPoints(Mat& image, int curv_thr);
 
 // calculate the gradient vector of the features
-vector<vector<double>> computeOrientationHist(const Mat& image, const vector<KeyPoint> &kps);
+vector<double> computeOrientationHist(const Mat& image);
 
 void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints);
 }
