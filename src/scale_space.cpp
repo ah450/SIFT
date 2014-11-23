@@ -81,7 +81,7 @@ vector<KeyPoint> &keypoints) {
                 // FIXME: Use subpixel values 
                 // Compute subpixel values
                 // using taylor expansion
-                keypoints.emplace_back(p.first, p.second, octave_sigma, -1,
+                keypoints.emplace_back(p.first, p.second, octave_sigma, image,
                     octave_dog[image].at<image_t>(p.first, p.second), octave);
             }
         }
