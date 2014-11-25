@@ -5,17 +5,28 @@
 
 namespace sift {
 
+typedef std::function<double (int, int)> eval_func_t;
+
+/**
+ * @brief Lazizly evaluated cv::Mat wrapper.
+ * @tparam Func_t eval func type.
+ */
 template <class Func_t>
 class LazyMat {
     typedef typename Func_t::result_type value_t;
     Func_t f;
-    std::vector<bool> is_computed;
-    std::vector<value_t> values;
-
+    std::vector<bool> is_computed; 
+    std::vector<value_t> values; 
 public:
     const int rows, cols;
+    /**
+     * @param f eval function.
+     * @param rows number of rows
+     * @param cols number of columns
+     */
     LazyMat(Func_t f, int rows, int cols): f(f), is_computed(rows *cols),
         values(rows *cols), rows(rows), cols(cols) {}
+    
     template <typename ReturnValue>
     ReturnValue at(int x, int y) {
         int index  = x * cols + y;
@@ -29,10 +40,14 @@ public:
 
 };
 
+/**
+ * @brief Computes the difference between two points
+ */
 inline double delta(const Mat &image, int x1, int y1, int x2, int y2) {
     return image.template at<sift::image_t>(x2,
                                             y2) - image.template at<sift::image_t>(x1, y1);
 }
+
 
 double delta_y(const Mat &image, int x, int y) {
     int above = y < image.rows - 1 ? y + 1 : y;
@@ -47,8 +62,23 @@ double delta_x(const Mat &image, int x, int y) {
 }
 
 
+/**
+ * @brief Represents Rectangular area.
+ * @detail Either a rectangle whose size is a parameter or one for 
+ * a gaussian kernel based on scale value with a minimum of 5x5.
+ */
 struct Neighbourhood {
     int kernel_size, row_start, row_end, col_start, col_end;
+
+    /**
+     * @brief Constructs a Neighbourhood for a gaussian kernel
+     * @param num_rows Total number of rows in parent region
+     * @param num_columns Total number of columns in parent region
+     * @param row center row value
+     * @param col center col value
+     * @param scale gauss sigma
+     * @param min minimum kernel size, defaults to 5.
+     */
     Neighbourhood(int num_rows, int num_columns, int row, int col,
                   double scale, double min = 5.0) {
         kernel_size = std::max(3 * scale, min);
@@ -56,15 +86,28 @@ struct Neighbourhood {
             kernel_size += 1;
         }
         int kernel_half = kernel_size / 2;
-        row_start = row > kernel_half ? row - kernel_half : 0;
-        row_end = row + kernel_half < num_rows - 1 ? row + kernel_half + 1 : num_rows;
-        col_start = col > kernel_half ? col - kernel_half : 0;
-        col_end = col + kernel_half < num_columns - 1 ? col + kernel_half + 1 :
+        calc_rect(num_rows, num_columns, row, col, kernel_half);
+    }
+
+    /**
+     * @brief Calculates a size * size rectangle  around row, col.
+     */
+    Neighbourhood(int num_rows, int num_columns, int row, int col, int size=16) {
+        calc_rect(num_rows, num_columns, row, col, size/2);
+    }
+
+private:
+    void calc_rect(int num_rows, int num_columns, int row, int col, int half_size){
+        row_start = row > half_size ? row - half_size : 0;
+        row_end = row + half_size < num_rows - 1 ? row + half_size + 1 : num_rows;
+        col_start = col > half_size ? col - half_size : 0;
+        col_end = col + half_size < num_columns - 1 ? col + half_size + 1 :
                   num_columns;
     }
+
 };
 
-typedef std::function<double (int, int)> eval_func_t;
+
 
 /**
  * @brief creates a function that applies a smoothing filter.
@@ -155,8 +198,6 @@ vector<KeyPoint> &kps) {
     histograms.reserve(kps.size());
     using namespace std::placeholders;
     vector<LazyMat<eval_func_t>> dx, dy, grads, angles;
-
-
     for (auto &image : images) {
         auto xf = std::bind(delta_x, std::ref(image), _1, _2);
         auto yf = std::bind(delta_y, std::ref(image), _1, _2);
@@ -169,9 +210,6 @@ vector<KeyPoint> &kps) {
         angles.emplace_back(create_angle_func(dx[i], dy[i]), dx[i].rows, dx[i].cols);
     }
 
-
-
-
     // Calculate histograms of each keypoint
     for (auto &kp : kps) {
         LazyMat<eval_func_t> &grad_magnitudes = grads[kp.octave];
@@ -180,14 +218,16 @@ vector<KeyPoint> &kps) {
                                          0.0); // Histogram for current keypoint to be populated
         // Number of samples taken into account depend on scale of keypoint
         // NeighbourhoodArea is a helper class for finding the row and column boundries
-        Neighbourhood area_info(grad_magnitudes.rows,
+        Neighbourhood gaus_area_info(grad_magnitudes.rows,
                                 grad_magnitudes.cols, kp.pt.x, kp.pt.y, kp.size);
         // Need to smooth magnitudes with special filter based on scale
         auto smoothing_func = create_smoothing_func(grad_magnitudes, kp,
-                              area_info.kernel_size);
+                              gaus_area_info.kernel_size);
         // Lazily evaluate as usual.
         LazyMat<eval_func_t> smoothed_magnitudes(smoothing_func, grad_magnitudes.rows,
                 grad_magnitudes.cols);
+
+        Neighbourhood area_info(grad_magnitudes.rows, grad_magnitudes.cols, kp.pt.x, kp.pt.y);
         // In our area of interest, calculate histogram.
         for (int i = area_info.row_start; i < area_info.row_end; i++) {
             for (int j = area_info.col_start; j < area_info.col_end; j++) {
