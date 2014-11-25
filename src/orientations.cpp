@@ -1,10 +1,7 @@
 #include "sift.hpp"
 #include "internal.hpp"
 #include <opencv2/opencv.hpp>
-#include <functional>
-#include <algorithm>
-#include <utility>
-#include <cmath>
+
 
 namespace sift {
 
@@ -194,6 +191,8 @@ vector<vector<double>> computeOrientationHist(const vector<Mat> &images, vector<
                 kp_histogram[index] += magnitude;
             }
         }
+        kp.angle = angles_mat.template at<double>(kp.pt.x, kp.pt.y);
+        kp.response = smoothed_magnitudes.at<double>(kp.pt.x, kp.pt.y);
         histograms.emplace_back(kp_histogram);
 
     }
