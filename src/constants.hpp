@@ -4,8 +4,8 @@
 #include <cmath>
 
 namespace sift {
-    const auto IMAGE_DATA_TYPE = CV_8U;
-    typedef uint8_t image_t;
+    const auto IMAGE_DATA_TYPE = CV_64F;
+    typedef double image_t;
 
     const auto GAUSSIAN_PYR_KERNEL_SIZE = 3;
     // sigma of the gaussian blur kernel
