@@ -10,6 +10,15 @@
 
 namespace sift {
 
+/**
+ * @brief Builds the gaussian pyramid
+ *
+ * @param image cv::Mat representing the input image
+ * @param pyr reference to a 2D vector representing pyramids of all octaves.
+ * @param nOctaves total number of octaves that should be built
+ * @remark pyr[0] is octave 0, pyr[0][0] is the least blurred image of octave 0
+ * @return void
+ */
 void buildGaussianPyramid(Mat& image, vector<vector<Mat>>& pyr, int nOctaves) {
     Mat image_ds = image.clone();
     pyr.resize(nOctaves);
