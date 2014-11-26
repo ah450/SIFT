@@ -22,19 +22,18 @@ inline void max_min(int row_start, int row_end, int col_start,
 inline bool is_max_or_min(int row, int col,
                           const cv::Mat &lower,
                           const cv::Mat &current, const cv::Mat &upper) {
-    // find window size, ends are one past.
-    int row_start = row > 0 ? row - 1 : row;
-    int row_end = row + 1 < current.rows ? row + 2 : row + 1;
-    int col_end = col + 1 < current.cols ? col + 2 : col + 1;
-    int col_start = col > 0 ? col - 1 : col;
+    sift::internal::Neighbourhood area(current.rows, current.cols, row, col, 1);
     sift::image_t center = current.at<sift::image_t>(row, col);
     sift::image_t max(center), min(center);    
     // check in current
-    max_min(row_start, row_end, col_start, col_end, current, max, min);
+    max_min(area.row_start, area.row_end, area.col_start, area.col_end, current,
+        max, min);
     // check in upper
-    max_min(row_start, row_end, col_start, col_end, upper, max, min);
+    max_min(area.row_start, area.row_end, area.col_start, area.col_end, upper,
+        max, min);
     // cehck in lower
-    max_min(row_start, row_end, col_start, col_end, lower, max, min);
+    max_min(area.row_start, area.row_end, area.col_start, area.col_end, lower,
+        max, min);
     return (max == center) | (min == center);
 }
 

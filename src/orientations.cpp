@@ -81,8 +81,8 @@ eval_func_t create_smoothing_func(MagnitudesMat &grad_magnitudes, KeyPoint &kp,
     auto scale = kp.size;
     // Function to apply gaussian depends on gra
     auto apply_gauss = [&grad_magnitudes, gauss, scale](int row, int column) {
-        Neighbourhood area(grad_magnitudes.rows, grad_magnitudes.cols, row, column,
-                           scale);
+        sift::internal::Neighbourhood area(grad_magnitudes.rows, 
+            grad_magnitudes.cols, row, column, scale);
         double value = 0.0;
         for (int i = area.row_start; i < area.row_end; i++) {
             for (int j = area.col_start; j < area.col_end; j++ ) {
@@ -151,6 +151,7 @@ eval_func_t create_angle_func(DxMat &dx_mat, DyMat &dy_mat) {
 
 vector<vector<double>> computeOrientationHist(const vector<Mat> &images,
 vector<KeyPoint> &kps) {
+    using namespace sift::internal;
     vector<vector<double>> histograms;
     histograms.reserve(kps.size());
     using namespace std::placeholders;
@@ -184,7 +185,7 @@ vector<KeyPoint> &kps) {
         LazyMat<eval_func_t> smoothed_magnitudes(smoothing_func, grad_magnitudes.rows,
                 grad_magnitudes.cols);
 
-        Neighbourhood area_info(grad_magnitudes.rows, grad_magnitudes.cols, kp.pt.x, kp.pt.y);
+        Neighbourhood area_info(grad_magnitudes.rows, grad_magnitudes.cols, kp.pt.x, kp.pt.y, 5);
         // In our area of interest, calculate histogram.
         for (int i = area_info.row_start; i < area_info.row_end; i++) {
             for (int j = area_info.col_start; j < area_info.col_end; j++) {

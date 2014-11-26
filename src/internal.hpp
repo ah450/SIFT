@@ -52,8 +52,8 @@ struct Neighbourhood {
     /**
      * @brief Calculates a size * size rectangle  around row, col.
      */
-    Neighbourhood(int num_rows, int num_columns, int row, int col, int size=16) {
-        calc_rect(num_rows, num_columns, row, col, size/2);
+    Neighbourhood(int num_rows, int num_columns, int row, int col, int half_size) {
+        calc_rect(num_rows, num_columns, row, col, half_size);
     }
 
 private:

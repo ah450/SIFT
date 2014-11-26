@@ -86,7 +86,7 @@ vector<KeyPoint> &keypoints) {
              ***********************************************************************************************/
             for (const auto &p : points) {
                 // FIXME: need to compute response value
-                // found abs(interpolated_DoG_val   ue), what does that mean?
+                // found abs(interpolated_DoG_value), what does that mean?
                 // FIXME: Use subpixel values 
                 // Compute subpixel values
                 // using taylor expansion
