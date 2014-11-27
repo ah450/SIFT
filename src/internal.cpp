@@ -55,5 +55,34 @@ vector<point> find_local_extremas(const Mat &lower_dog,
     return points;
 }
 
+double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyPoint kp) {
+    image_t xx_d[3]    = {1.0, -2.0, 1.0};
+    image_t xy_d[3][3] =
+       {{1.0,  0.0, -1.0},
+        {0.0,  0.0,  0.0},
+        {-1.0, 0.0,  1.0}};
+
+    Mat xx(3, 1, IMAGE_DATA_TYPE, xx_d);
+    Mat yy(1, 3, IMAGE_DATA_TYPE, xx_d);
+    Mat xy(3, 3, IMAGE_DATA_TYPE, xy_d);
+
+    Mat dog = dog_pyr[kp.octave][(int)kp.angle];
+    Mat Dxx = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y,   kp.pt.y+1)).mul(xx);
+    Mat Dyy = dog(cv::Range(kp.pt.x,   kp.pt.x+1), cv::Range(kp.pt.y-1, kp.pt.y+2)).mul(yy);
+    Mat Dxy = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y-1, kp.pt.y+2)).mul(xy);
+
+    double Dxx_sum = std::accumulate(Dxx.begin<image_t>(), Dxx.end<image_t>(), 0.0);
+    double Dyy_sum = std::accumulate(Dyy.begin<image_t>(), Dyy.end<image_t>(), 0.0);
+    double Dxy_sum = std::accumulate(Dxy.begin<image_t>(), Dxy.end<image_t>(), 0.0);
+
+    // Compute the trace and the determinant of the Hessian.
+    double Tr_H = Dxx_sum + Dyy_sum;
+    double Det_H = Dxx_sum*Dyy_sum - std::pow(Dxy_sum, 2);
+    if (Det_H < EPSILON) return -1;
+
+    // Compute the ratio of the principal curvatures.
+    return std::pow(Tr_H, 2)/Det_H;
+}
+
 }
 }

@@ -3,6 +3,7 @@
 #include <utility>
 #include <cstddef>
 #include <cmath>
+#include <numeric>
 
 
 
@@ -66,6 +67,8 @@ private:
     }
 
 };
+
+double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyPoint kp);
 
 }
 }

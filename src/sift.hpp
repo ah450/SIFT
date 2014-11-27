@@ -22,7 +22,7 @@ void getScaleSpaceExtrema(vector<vector<Mat>>& dog_pyr,
                           vector<KeyPoint>& keypoints);
 
 // clean points based on contrast and principal curvature ratio
-void cleanPoints(Mat& image, int curv_thr);
+void cleanPoints(Mat& image, const vector<vector<Mat>>& dog_pyr, vector<KeyPoint>& keypoints);
 
 // calculate the gradient vector of the features
 vector<vector<double>>computeOrientationHist(const vector<Mat> &dogs_pyr, vector<KeyPoint> &kps);
