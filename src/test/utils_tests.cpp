@@ -5,7 +5,7 @@
 
 
 TEST_CASE("Down sampling", "[utilities]") {
-    cv::Mat m(8, 8, sift::IMAGE_DATA_TYPE, img8x8_data);
+    cv::Mat m = clone_test_data(8, 8, img8x8_data);
     cv::Mat downsampled;
     SECTION("Exception safety") {
         
@@ -20,8 +20,7 @@ TEST_CASE("Down sampling", "[utilities]") {
 
     SECTION("Actual Data check") {
         downsampled = sift::downSample(m);
-        auto downsampled_fixture = cv::Mat(4, 4, 
-            sift::IMAGE_DATA_TYPE, img4x4_data);
+        auto downsampled_fixture = clone_test_data(4, 4, img4x4_data);
         REQUIRE( std::equal(downsampled_fixture.begin<sift::image_t>(),
             downsampled_fixture.end<sift::image_t>(), 
             downsampled.begin<sift::image_t>()) );

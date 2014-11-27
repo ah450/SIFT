@@ -4,7 +4,7 @@
 TEST_CASE("Difference of Gaussian", "[DoG]") {
     using std::vector;
     using cv::Mat;
-    Mat image(128, 128, sift::IMAGE_DATA_TYPE, img128x128_data);
+    Mat image = clone_test_data(128, 128, img128x128_data);
     vector<vector<cv::Mat>> pyr;
     constexpr int nOctaves = 6;
     sift::buildGaussianPyramid(image, pyr, nOctaves);

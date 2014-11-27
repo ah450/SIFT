@@ -2,7 +2,7 @@
 
 
 TEST_CASE("computeOrientationHist", "[hist]") {
-    cv::Mat image(128, 128, sift::IMAGE_DATA_TYPE, img128x128_data);
+    cv::Mat image = clone_test_data(128, 128, img128x128_data);
     std::vector<std::vector<cv::Mat>> gaus_pyr;
     sift::buildGaussianPyramid(image, gaus_pyr, 6);
     std::vector<std::vector<cv::Mat>> dogs = sift::buildDogPyr(gaus_pyr);

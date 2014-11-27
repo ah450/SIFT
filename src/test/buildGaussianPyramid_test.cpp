@@ -7,7 +7,7 @@ using namespace sift;
 
 TEST_CASE("Create Gaussian Pyramid from an image and nOctaves", "[buildGaussianPyramid]") {
 
-    Mat image(8, 8, sift::IMAGE_DATA_TYPE, img8x8_data);
+    Mat image = clone_test_data(8, 8, img8x8_data);
     vector<vector<Mat>> pyr;
     int nOctaves = 2;
 
