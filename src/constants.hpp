@@ -18,4 +18,13 @@ namespace sift {
 
     // size of each octave (number of blurred images)
     const auto GAUSSIAN_PYR_OCTAVE_SIZE = GAUSSIAN_PYR_S + 3;
+
+    // minimum keypoint contrast and maximum curvature
+    const auto KP_CONTRAST_THRESHOLD    = 0.02;
+    const auto KP_CURVATURE_THRESHOLD   = 10.0;
+
+    const auto KP_CURVATURE_THRESHOLD_VAL = std::pow(KP_CURVATURE_THRESHOLD + 1, 2) / KP_CURVATURE_THRESHOLD;
+    // FIXME this should be image_t, but...
+    const double EPSILON = 0.00001;
+
 }

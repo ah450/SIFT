@@ -97,6 +97,25 @@ vector<KeyPoint> &keypoints) {
     }
 }
 
+/**
+ * @brief Cleans a vector of keypoints based on contrast and curvature ratio
+ * @param image cv::Mat representing the input image
+ * @param keypoints reference to the vector of KeyPoints to work on
+ * @return void
+ */
+void cleanPoints(Mat& image __attribute__((unused)), const vector<vector<Mat>>& dog_pyr,
+vector<KeyPoint>& keypoints) {
+    auto good_kps_end = remove_if(keypoints.begin(), keypoints.end(),
+            [dog_pyr](KeyPoint kp) {
+                double contrast = std::abs(kp.response);
+                if (contrast < KP_CONTRAST_THRESHOLD) return false;
+                double curv = internal::compute_keypoint_curvature(dog_pyr, kp);
+                if (curv > KP_CURVATURE_THRESHOLD) return false;
+                return true;
+            });
+    keypoints.erase(good_kps_end, keypoints.end());
+}
+
 
 
 }
