@@ -66,6 +66,10 @@ double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyP
     Mat yy(1, 3, IMAGE_DATA_TYPE, xx_d);
     Mat xy(3, 3, IMAGE_DATA_TYPE, xy_d);
 
+    // discard keypoints on the edges of the image
+    // FIXME is this fine?
+    if (kp.pt.x == 0 || kp.pt.y == 0) return -1;
+
     Mat dog = dog_pyr[kp.octave][(int)kp.angle];
     Mat Dxx = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y,   kp.pt.y+1)).mul(xx);
     Mat Dyy = dog(cv::Range(kp.pt.x,   kp.pt.x+1), cv::Range(kp.pt.y-1, kp.pt.y+2)).mul(yy);
