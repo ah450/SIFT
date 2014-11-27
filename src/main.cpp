@@ -72,11 +72,14 @@ int main(int argc, char const *argv[]) {
             std::cout << "Computing Keypoints" << std::endl;
             sift::getScaleSpaceExtrema(dog_pyr, keypoints);
             // Assign orientation, ignore histogram for now
-            std::cout << "Assigning orientations" << std::endl;
             std::vector<cv::Mat> images;
             for (std::size_t i = 0; i < gaus_pyr.size(); i++) {
                 images.emplace_back(gaus_pyr[i][0]);
             }
+            // Clean them
+            std::cout << "Cleaning points" << std::endl;
+            sift::cleanPoints(image, dog_pyr, keypoints);
+            std::cout << "Assigning orientations" << std::endl;
             sift::computeOrientationHist(images, keypoints);
             // Draw keypoints
             cv::Mat kp_image;
@@ -86,14 +89,7 @@ int main(int argc, char const *argv[]) {
             const std::string kp_name = image_path + " Keypoints";
             cv::namedWindow(kp_name, cv::WINDOW_AUTOSIZE);
             cv::imshow(kp_name, kp_image);
-            // Clean them
-            // sift::cleanPoints(image, dog_pyr, keypoints);
-            // std::cout << "After cleaning" << std::endl;
-            // cv::Mat kp_clean_image;
-            // cv::drawKeypoints(image_char, keypoints, kp_clean_image);
-            // const std::string clean_kp_name = image_path + " Clean Keypoints";
-            // cv::namedWindow(clean_kp_name, cv::WINDOW_AUTOSIZE);
-            // cv::imshow(clean_kp_name, kp_clean_image);
+            
             std::cout << "Done" << std::endl;
             cv::waitKey(0);
         }
