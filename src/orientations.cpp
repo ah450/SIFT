@@ -1,7 +1,7 @@
 #include "sift.hpp"
 #include "internal.hpp"
 #include <opencv2/opencv.hpp>
-
+#include <functional>
 
 namespace sift {
 
