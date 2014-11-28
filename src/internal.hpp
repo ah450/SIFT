@@ -5,6 +5,7 @@
 #include <cmath>
 #include <numeric>
 
+#define UNUSED(VAR) (void)(VAR)
 
 
 namespace sift {

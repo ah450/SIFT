@@ -114,8 +114,9 @@ vector<KeyPoint> &keypoints) {
  * @param keypoints reference to the vector of KeyPoints to work on
  * @return void
  */
-void cleanPoints(Mat& image __attribute__((unused)), const vector<vector<Mat>>& dog_pyr,
+void cleanPoints(Mat& image , const vector<vector<Mat>>& dog_pyr,
 vector<KeyPoint>& keypoints) {
+    UNUSED(image);
     auto good_kps_end = remove_if(keypoints.begin(), keypoints.end(),
             [&dog_pyr](KeyPoint &kp) {
                 double contrast = std::abs(kp.response);
