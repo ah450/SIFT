@@ -5,10 +5,11 @@
 #include "constants.hpp"
 
 #include <vector>
-
+#include <array>
 
 namespace sift {
 using std::vector;
+using std::array;
 using cv::Mat;
 using cv::KeyPoint;
 
@@ -25,7 +26,9 @@ void getScaleSpaceExtrema(vector<vector<Mat>>& dog_pyr,
 void cleanPoints(Mat& image, const vector<vector<Mat>>& dog_pyr, vector<KeyPoint>& keypoints);
 
 // calculate the gradient vector of the features
-vector<vector<double>>computeOrientationHist(const vector<Mat> &images, vector<KeyPoint> &kps);
+typedef array<array<double, 8>, 16> descriptor_t;
+
+vector<descriptor_t> computeOrientationHist(const vector<Mat> &images, vector<KeyPoint> &kps);
 
 void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints);
 }

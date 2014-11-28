@@ -1,0 +1,28 @@
+#include "sift.hpp"
+#include <opencv2/highgui/highgui.hpp>
+int nOctaves;
+
+namespace sift {
+
+void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints) {
+    vector<vector<Mat>> gaus_pyr;
+    buildGaussianPyramid(image, gaus_pyr, nOctaves);
+    vector<vector<Mat>> dog = buildDogPyr(gaus_pyr);
+    vector<KeyPoint> kps;
+    getScaleSpaceExtrema(dog, kps);
+    cleanPoints(image, dog, kps);
+    vector<Mat> images(nOctaves);
+    for(auto & octave : gaus_pyr) {
+        images.emplace_back(octave.front());
+    }
+    vector<descriptor_t> descriptors = computeOrientationHist(images, kps);
+    cv::Mat kp_image;
+    cv::Mat image_char;
+    image.convertTo(image_char, CV_8U);
+    cv::drawKeypoints(image_char, keypoints, kp_image);
+    cv::namedWindow("KeyPoints", cv::WINDOW_AUTOSIZE);
+    cv::imshow("KeyPoints", kp_image);
+    cv::waitKey(0);
+}
+
+}

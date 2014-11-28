@@ -29,5 +29,7 @@
 
 build/
 bin/
+debug/
+.idea/
 
 *.sublime*

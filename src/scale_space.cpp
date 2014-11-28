@@ -59,6 +59,17 @@ vector<vector<Mat>> buildDogPyr(vector<vector<Mat>> gauss_pyr) {
             } );
         dog_iterator++;
     }
+
+    // Normalize DoG
+    for (auto &octave : dogs) {
+        
+        for(auto & dog: octave) {
+            double max, min;
+            cv::minMaxLoc(dog, &min, &max);
+            dog = dog/max;
+        }
+    }
+
     return dogs;
 }
 
@@ -106,7 +117,7 @@ vector<KeyPoint> &keypoints) {
 void cleanPoints(Mat& image __attribute__((unused)), const vector<vector<Mat>>& dog_pyr,
 vector<KeyPoint>& keypoints) {
     auto good_kps_end = remove_if(keypoints.begin(), keypoints.end(),
-            [dog_pyr](KeyPoint kp) {
+            [&dog_pyr](KeyPoint &kp) {
                 double contrast = std::abs(kp.response);
                 if (contrast < KP_CONTRAST_THRESHOLD) return false;
                 double curv = internal::compute_keypoint_curvature(dog_pyr, kp);

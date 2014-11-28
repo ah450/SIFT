@@ -11,15 +11,6 @@ TEST_CASE("computeOrientationHist", "[hist]") {
     for (std::size_t i = 0; i < gaus_pyr.size(); i++) {
         images.emplace_back(gaus_pyr[i][0]);
     }
-    sift::getScaleSpaceExtrema(dogs, keypoints);
-    std::vector<std::vector<double>> histograms;
-    SECTION("Orientation Size"){
-        REQUIRE_NOTHROW(histograms = sift::computeOrientationHist(images, keypoints));
-        REQUIRE(histograms.size() == keypoints.size());
-        for (auto &hist : histograms ) {
-            REQUIRE(hist.size() == 36);
-        }
 
 
-    }
 }
