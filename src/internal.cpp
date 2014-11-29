@@ -1,5 +1,5 @@
 #include <internal.hpp>
-
+#include <limits>
 
 
 inline void max_min(int row_start, int row_end, int col_start,
@@ -68,7 +68,7 @@ double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyP
 
     // discard keypoints on the edges of the image
     // FIXME is this fine?
-    if (kp.pt.x == 0 || kp.pt.y == 0) return -1;
+    if (kp.pt.x == 0 || kp.pt.y == 0) return std::numeric_limits<double>::infinity();
 
     Mat dog = dog_pyr[kp.octave][(int)kp.angle];
     Mat Dxx = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y,   kp.pt.y+1)).mul(xx);
@@ -82,7 +82,7 @@ double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyP
     // Compute the trace and the determinant of the Hessian.
     double Tr_H = Dxx_sum + Dyy_sum;
     double Det_H = Dxx_sum*Dyy_sum - std::pow(Dxy_sum, 2);
-    if (Det_H < EPSILON) return -1;
+    if (Det_H < EPSILON) return std::numeric_limits<double>::infinity();
 
     // Compute the ratio of the principal curvatures.
     return std::pow(Tr_H, 2)/Det_H;
