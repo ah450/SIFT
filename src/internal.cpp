@@ -71,10 +71,14 @@ double compute_keypoint_curvature(const vector<vector<Mat>>& dog_pyr, const KeyP
     if (kp.pt.x == 0 || kp.pt.y == 0) return std::numeric_limits<double>::infinity();
 
     Mat dog = dog_pyr[kp.octave][(int)kp.angle];
-    Mat Dxx = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y,   kp.pt.y+1)).mul(xx);
-    Mat Dyy = dog(cv::Range(kp.pt.x,   kp.pt.x+1), cv::Range(kp.pt.y-1, kp.pt.y+2)).mul(yy);
-    Mat Dxy = dog(cv::Range(kp.pt.x-1, kp.pt.x+2), cv::Range(kp.pt.y-1, kp.pt.y+2)).mul(xy);
-
+    Mat Dxx, Dyy, Dxy;
+    try {
+        Dxx = dog(cv::Range(kp.pt.x - 1, kp.pt.x + 2), cv::Range(kp.pt.y, kp.pt.y + 1)).mul(xx);
+        Dyy = dog(cv::Range(kp.pt.x, kp.pt.x + 1), cv::Range(kp.pt.y - 1, kp.pt.y + 2)).mul(yy);
+        Dxy = dog(cv::Range(kp.pt.x - 1, kp.pt.x + 2), cv::Range(kp.pt.y - 1, kp.pt.y + 2)).mul(xy);
+    } catch(cv::Exception &) {
+        return -1; // filter keypoint because ranges are out of bounds
+    }
     double Dxx_sum = std::accumulate(Dxx.begin<image_t>(), Dxx.end<image_t>(), 0.0);
     double Dyy_sum = std::accumulate(Dyy.begin<image_t>(), Dyy.end<image_t>(), 0.0);
     double Dxy_sum = std::accumulate(Dxy.begin<image_t>(), Dxy.end<image_t>(), 0.0);
