@@ -7,7 +7,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STR
         -std=c++11
         -Wall
         -Wextra
-        -Werror
         )
     # Yes discard default values
     set(CMAKE_CXX_FLAGS_RELEASE "-flto -O3 -march=native -fmerge-all-constants -fgcse-sm -fgcse-las")

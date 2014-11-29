@@ -1,7 +1,7 @@
 #include "sift.hpp"
 #include "internal.hpp"
 #include <opencv2/opencv.hpp>
-#include <tbb/tbb.h>
+#include <tbb/parallel_for.h>
 #include <cmath>
 #include <cassert>
 #include <unordered_map>
