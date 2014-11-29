@@ -3,7 +3,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq build-essential gcc-4.8 g++-4.8 libboost-all-dev 
+  - sudo apt-get install -qq build-essential gcc-4.8 g++-4.8 libboost-all-dev libtbb-dev
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - curl -sL https://github.com/Itseez/opencv/archive/2.4.6.1.zip > opencv.zip
   - unzip opencv.zip

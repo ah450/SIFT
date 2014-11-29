@@ -72,7 +72,7 @@ int main(int argc, char const *argv[]) {
     desc.add_options()
         ("help,h", "produce this help message")
         ("input,i", po::value<std::vector<std::string>>()->composing(),
-        "input image or folder to be searched recursively")
+        "input image")
         ("trace,t", po::bool_switch(), "Show trace of each step")
         ("nOctaves,n", po::value<int>(&nOctaves)->default_value(2), "Number of octaves")
     ;

@@ -26,7 +26,8 @@ void getScaleSpaceExtrema(vector<vector<Mat>>& dog_pyr,
 void cleanPoints(Mat& image, const vector<vector<Mat>>& dog_pyr, vector<KeyPoint>& keypoints);
 
 // calculate the gradient vector of the features
-typedef array<array<double, 8>, 16> descriptor_t;
+typedef array<double, 8> histogram_t;
+typedef array<histogram_t, 16> descriptor_t;
 
 vector<descriptor_t> computeOrientationHist(const vector<Mat> &images, vector<KeyPoint> &kps);
 
