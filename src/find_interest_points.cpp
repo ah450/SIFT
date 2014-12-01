@@ -1,6 +1,5 @@
 #include "sift.hpp"
 #include <opencv2/highgui/highgui.hpp>
-
 int nOctaves;
 
 namespace sift {
